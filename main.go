@@ -1,6 +1,10 @@
 package main
 
 import (
+	"encoding/base64"
+	"fmt"
+	"strings"
+
 	"github.com/charmbracelet/log"
 
 	gitlab "github.com/xanzy/go-gitlab"
@@ -55,14 +59,31 @@ func main() {
 			log.Error(err)
 			continue
 		}
-		log.Debugf("File contents: %s", file)
 
-		log.Debugf("project id: %d", merge_request.ProjectID)
-		log.Debugf("merge_request iid: %d", merge_request.IID)
+		file_contents, err := base64.StdEncoding.DecodeString(file.Content)
+		if err != nil {
+			log.Fatalf("Could not decode contents of file: %v", file)
+		}
+
+		reviewers_nicks := strings.Split(string(file_contents), "\n")
+		log.Debugf("Got reviewers: %v", reviewers_nicks)
+
+		shuffle_reviewers(&reviewers_nicks)
+
+		reviewer_users := app.get_users(reviewers_nicks)
+		log.Debugf("Got %d reviewer users", len(reviewer_users))
+
+
+		var sb strings.Builder
+		sb.WriteString("/assign_reviewer")
+		for _, reviewer := range reviewer_users {
+			sb.WriteString(fmt.Sprintf(" @%s", reviewer.Username))
+		}
+		log.Debugf("Generated string is: %s", sb.String())
+
 		_, req, err := app.client.Discussions.CreateMergeRequestDiscussion(merge_request.ProjectID, merge_request.IID, &gitlab.CreateMergeRequestDiscussionOptions{
-			Body: gitlab.Ptr("Unassigning myself, assigning random reviewers"),
+			Body: gitlab.Ptr(fmt.Sprintf("Unassigning myself, assigning random reviewers\n%s",sb.String())),
 		})
-
 		if err != nil {
 			log.Errorf("Failed to create a merge request discussion: %v; %v", err, req)
 		}
