@@ -75,11 +75,12 @@ func (a app) run() {
 			reviewersIDs = append(reviewersIDs, reviewerUsers[i].ID)
 		}
 
-		_, req, err := a.client.Discussions.CreateMergeRequestDiscussion(mergeRequest.ProjectID, mergeRequest.IID, &gitlab.CreateMergeRequestDiscussionOptions{
+		_, req, err := a.client.Notes.CreateMergeRequestNote(mergeRequest.ProjectID, mergeRequest.IID, &gitlab.CreateMergeRequestNoteOptions{
 			Body: gitlab.Ptr("Unassigning myself, assigning random reviewers"),
 		})
 		if err != nil {
-			log.Errorf("Failed to create a merge request discussion: %v; %v", err, req)
+			log.Errorf("Failed to create a merge request note: %v; %v", err, req)
+			continue
 		}
 
 		_, req, err = a.client.MergeRequests.UpdateMergeRequest(mergeRequest.ProjectID, mergeRequest.IID, &gitlab.UpdateMergeRequestOptions{
@@ -87,6 +88,7 @@ func (a app) run() {
 		})
 		if err != nil {
 			log.Errorf("Failed to assign reviewers: %v; %v", err, req)
+			continue
 		}
 	}
 }
