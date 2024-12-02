@@ -16,5 +16,10 @@ func parseConfig(filename string) Config {
 	if err != nil {
 		log.Fatalf("Error when reading configuration: %v", err)
 	}
+
+	if conf.Token == "" {
+		log.Fatal("Empty GitLab token")
+	}
+
 	return conf
 }

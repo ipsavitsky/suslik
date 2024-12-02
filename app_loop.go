@@ -1,44 +1,59 @@
 package main
 
 import (
-	"encoding/base64"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/charmbracelet/log"
 
 	gitlab "github.com/xanzy/go-gitlab"
 )
 
+func (a app) loop() {
+	for {
+		a.run()
+		log.Debug("Sleeping for 10 seconds...")
+		time.Sleep(10 * time.Second)
+	}
+}
+
 func (a app) run() {
+	var err error
+
+	defer func() {
+		if r := recover(); r != nil {
+			var ok bool
+			err, ok = r.(error)
+			if !ok {
+				err = fmt.Errorf("pkg: %v", r)
+			}
+			log.Errorf("Uncaught panic occured: %v:", err)
+		}
+	}()
+
 	merge_requests, _, err := a.client.MergeRequests.ListMergeRequests(&gitlab.ListMergeRequestsOptions{
 		ReviewerID: gitlab.ReviewerID(a.get_current_user().ID),
 	})
 
 	if err != nil {
-		log.Errorf("Failed to get curent merge requests: %v", err)
+		log.Errorf("Failed to get assigned merge requests: %v", err)
+		return
 	}
 
-	log.Debugf("Found merge requsts assigned to: %d", len(merge_requests))
+	log.Debugf("Found %d assigned merge requests", len(merge_requests))
 
 	for _, merge_request := range merge_requests {
-		file, _, err := a.client.RepositoryFiles.GetFile(merge_request.ProjectID, "REVIEWERS", &gitlab.GetFileOptions{
-			Ref: &a.conf.ReviewerFileRef,
-		})
+		reviewers_nicks, err := a.get_reviewers_usernames(merge_request)
 		if err != nil {
-			log.Error(err)
+			log.Errorf("Failed to get reviewers info: %v", err)
 			continue
 		}
-
-		file_contents, err := base64.StdEncoding.DecodeString(file.Content)
+		err = shuffle_reviewers((&reviewers_nicks).(*[]string))
 		if err != nil {
-			log.Fatalf("Could not decode contents of file: %v", file)
+			log.Errorf("Failed to shuffle reviewers: %v", err)
+			continue
 		}
-
-		reviewers_nicks := strings.Split(string(file_contents), "\n")
-		log.Debugf("Got reviewers: %v", reviewers_nicks)
-
-		shuffle_reviewers(&reviewers_nicks)
 
 		reviewer_users := a.get_users(reviewers_nicks)
 		log.Debugf("Got %d reviewer users", len(reviewer_users))
@@ -48,6 +63,7 @@ func (a app) run() {
 		for _, reviewer := range reviewer_users {
 			sb.WriteString(fmt.Sprintf(" @%s", reviewer.Username))
 		}
+		sb.WriteString(fmt.Sprintf("\n/unassign_reviewer @%s", a.get_current_user().Username))
 		log.Debugf("Generated string is: %s", sb.String())
 
 		_, req, err := a.client.Discussions.CreateMergeRequestDiscussion(merge_request.ProjectID, merge_request.IID, &gitlab.CreateMergeRequestDiscussionOptions{

@@ -38,5 +38,5 @@ func main() {
 		conf: conf,
 	}
 
-	app.run()
+	app.loop()
 }
