@@ -44,7 +44,7 @@ func (a app) run() {
 	log.Debugf("Found %d assigned merge requests", len(merge_requests))
 
 	for _, merge_request := range merge_requests {
-		reviewers_nicks, err := a.get_reviewers_usernames(merge_request)
+		reviewers_nicks, err := a.get_reviewers_info(merge_request)
 		if err != nil {
 			log.Errorf("Failed to get reviewers info: %v", err)
 			continue
@@ -58,10 +58,16 @@ func (a app) run() {
 		reviewer_users := a.get_users(reviewers_nicks.Usernames)
 		log.Debugf("Got %d reviewer users", len(reviewer_users))
 
+		current_assigned_reviewers := len(merge_request.Reviewers)
+		amount_of_users_to_assign := reviewers_nicks.ReviewThreshold - current_assigned_reviewers
+		log.Debugf("reviewers_nicks.ReviewThreshold: %d", reviewers_nicks.ReviewThreshold)
+		log.Debugf("There are %d reviewers already assigned", current_assigned_reviewers)
+		log.Debugf("Assigning %d users", amount_of_users_to_assign)
+
 		var sb strings.Builder
 		sb.WriteString("/assign_reviewer")
-		for _, reviewer := range reviewer_users {
-			sb.WriteString(fmt.Sprintf(" @%s", reviewer.Username))
+		for i := 0; i < min(len(reviewer_users), amount_of_users_to_assign); i++ {
+			sb.WriteString(fmt.Sprintf(" @%s", reviewer_users[i].Username))
 		}
 		sb.WriteString(fmt.Sprintf("\n/unassign_reviewer @%s", a.get_current_user().Username))
 		log.Debugf("Generated string is: %s", sb.String())

@@ -11,11 +11,11 @@ import (
 )
 
 type ReviewersInfo struct {
-	ReviewThreshold int
-	Usernames []string
+	ReviewThreshold int `yaml:"reviewThreshold"`
+	Usernames []string  `yaml:"usernames"`
 }
 
-func (a app) get_reviewers_usernames(merge_request *gitlab.MergeRequest) (ReviewersInfo, error) {
+func (a app) get_reviewers_info(merge_request *gitlab.MergeRequest) (ReviewersInfo, error) {
 	var ri ReviewersInfo
 	file, _, err := a.client.RepositoryFiles.GetFile(merge_request.ProjectID, "reviewers.yaml", &gitlab.GetFileOptions{
 		Ref: &a.conf.ReviewerFileRef,
@@ -29,7 +29,11 @@ func (a app) get_reviewers_usernames(merge_request *gitlab.MergeRequest) (Review
 		return ri, errors.Join(errors.New("Could not decode contents of file"), err)
 	}
 
-	yaml.Unmarshal(file_contents, &ri)
+	err = yaml.Unmarshal(file_contents, &ri)
+	if err != nil {
+		return ri, errors.Join(errors.New("Failed unmarshalling a file"), err)
+	}
+
 	return ri, nil
 }
 

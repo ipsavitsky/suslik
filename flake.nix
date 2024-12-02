@@ -11,6 +11,7 @@
         default = pkgs.mkShell {
           packages = with pkgs; [
             go
+            air
             gopls
             go-tools
           ];
