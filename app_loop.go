@@ -49,13 +49,13 @@ func (a app) run() {
 			log.Errorf("Failed to get reviewers info: %v", err)
 			continue
 		}
-		err = shuffle_reviewers((&reviewers_nicks).(*[]string))
+		err = shuffle_reviewers(&reviewers_nicks)
 		if err != nil {
 			log.Errorf("Failed to shuffle reviewers: %v", err)
 			continue
 		}
 
-		reviewer_users := a.get_users(reviewers_nicks)
+		reviewer_users := a.get_users(reviewers_nicks.Usernames)
 		log.Debugf("Got %d reviewer users", len(reviewer_users))
 
 		var sb strings.Builder

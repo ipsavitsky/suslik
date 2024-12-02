@@ -6,6 +6,8 @@ require (
 	github.com/BurntSushi/toml v1.4.0
 	github.com/charmbracelet/log v0.4.0
 	github.com/xanzy/go-gitlab v0.114.0
+	golang.org/x/exp v0.0.0-20231006140011-7918f672742d
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -22,7 +24,6 @@ require (
 	github.com/muesli/reflow v0.3.0 // indirect
 	github.com/muesli/termenv v0.15.2 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
-	golang.org/x/exp v0.0.0-20231006140011-7918f672742d // indirect
 	golang.org/x/net v0.8.0 // indirect
 	golang.org/x/oauth2 v0.6.0 // indirect
 	golang.org/x/sys v0.20.0 // indirect

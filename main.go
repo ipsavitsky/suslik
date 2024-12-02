@@ -24,7 +24,7 @@ func (a *app) get_current_user() *gitlab.User {
 	if err != nil {
 		log.Errorf("Failed to get current user: %v", err)
 	}
-	log.Debugf("Name: %s", user.Name)
+	log.Debugf("Username: %s", user.Name)
 	return user
 }
 
