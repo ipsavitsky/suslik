@@ -32,8 +32,8 @@ func (a app) run() {
 		}
 	}()
 
-	merge_requests, _, err := a.client.MergeRequests.ListMergeRequests(&gitlab.ListMergeRequestsOptions{
-		ReviewerID: gitlab.ReviewerID(a.get_current_user().ID),
+	mergeRequests, _, err := a.client.MergeRequests.ListMergeRequests(&gitlab.ListMergeRequestsOptions{
+		ReviewerID: gitlab.ReviewerID(a.getCurrentUser().ID),
 	})
 
 	if err != nil {
@@ -41,38 +41,37 @@ func (a app) run() {
 		return
 	}
 
-	log.Debugf("Found %d assigned merge requests", len(merge_requests))
+	log.Debugf("Found %d assigned merge requests", len(mergeRequests))
 
-	for _, merge_request := range merge_requests {
-		reviewers_nicks, err := a.get_reviewers_info(merge_request)
+	for _, mergeRequest := range mergeRequests {
+		reviewersInfo, err := a.getReviewersInfo(mergeRequest)
 		if err != nil {
 			log.Errorf("Failed to get reviewers info: %v", err)
 			continue
 		}
-		err = shuffle_reviewers(&reviewers_nicks)
+		err = shuffleReviewers(&reviewersInfo)
 		if err != nil {
 			log.Errorf("Failed to shuffle reviewers: %v", err)
 			continue
 		}
 
-		reviewer_users := a.get_users(reviewers_nicks.Usernames)
-		log.Debugf("Got %d reviewer users", len(reviewer_users))
+		reviewerUsers := a.getUsers(reviewersInfo.Usernames)
+		log.Debugf("Got %d reviewer users", len(reviewerUsers))
 
-		current_assigned_reviewers := len(merge_request.Reviewers)
-		amount_of_users_to_assign := reviewers_nicks.ReviewThreshold - current_assigned_reviewers
-		log.Debugf("reviewers_nicks.ReviewThreshold: %d", reviewers_nicks.ReviewThreshold)
-		log.Debugf("There are %d reviewers already assigned", current_assigned_reviewers)
-		log.Debugf("Assigning %d users", amount_of_users_to_assign)
+		currentAssignedReviewers := len(mergeRequest.Reviewers)
+		amountOfUsersToAssign := reviewersInfo.ReviewThreshold - currentAssignedReviewers
+		log.Debugf("There are %d reviewers already assigned", currentAssignedReviewers)
+		log.Debugf("Assigning %d users", amountOfUsersToAssign)
 
 		var sb strings.Builder
 		sb.WriteString("/assign_reviewer")
-		for i := 0; i < min(len(reviewer_users), amount_of_users_to_assign); i++ {
-			sb.WriteString(fmt.Sprintf(" @%s", reviewer_users[i].Username))
+		for i := 0; i < min(len(reviewerUsers), amountOfUsersToAssign); i++ {
+			sb.WriteString(fmt.Sprintf(" @%s", reviewerUsers[i].Username))
 		}
-		sb.WriteString(fmt.Sprintf("\n/unassign_reviewer @%s", a.get_current_user().Username))
+		sb.WriteString(fmt.Sprintf("\n/unassign_reviewer @%s", a.getCurrentUser().Username))
 		log.Debugf("Generated string is: %s", sb.String())
 
-		_, req, err := a.client.Discussions.CreateMergeRequestDiscussion(merge_request.ProjectID, merge_request.IID, &gitlab.CreateMergeRequestDiscussionOptions{
+		_, req, err := a.client.Discussions.CreateMergeRequestDiscussion(mergeRequest.ProjectID, mergeRequest.IID, &gitlab.CreateMergeRequestDiscussionOptions{
 			Body: gitlab.Ptr(fmt.Sprintf("Unassigning myself, assigning random reviewers\n%s", sb.String())),
 		})
 		if err != nil {

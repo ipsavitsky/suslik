@@ -15,32 +15,32 @@ type ReviewersInfo struct {
 	Usernames []string  `yaml:"usernames"`
 }
 
-func (a app) get_reviewers_info(merge_request *gitlab.MergeRequest) (ReviewersInfo, error) {
+func (a app) getReviewersInfo(mergeRequest *gitlab.MergeRequest) (ReviewersInfo, error) {
 	var ri ReviewersInfo
-	file, _, err := a.client.RepositoryFiles.GetFile(merge_request.ProjectID, "reviewers.yaml", &gitlab.GetFileOptions{
+	file, _, err := a.client.RepositoryFiles.GetFile(mergeRequest.ProjectID, "reviewers.yaml", &gitlab.GetFileOptions{
 		Ref: &a.conf.ReviewerFileRef,
 	})
 	if err != nil {
-		return ri, errors.Join(errors.New("Failed to get reviewers file"), err)
+		return ri, errors.Join(errors.New("failed to get reviewers file"), err)
 	}
 
-	file_contents, err := base64.StdEncoding.DecodeString(file.Content)
+	fileContents, err := base64.StdEncoding.DecodeString(file.Content)
 	if err != nil {
-		return ri, errors.Join(errors.New("Could not decode contents of file"), err)
+		return ri, errors.Join(errors.New("could not decode contents of file"), err)
 	}
 
-	err = yaml.Unmarshal(file_contents, &ri)
+	err = yaml.Unmarshal(fileContents, &ri)
 	if err != nil {
-		return ri, errors.Join(errors.New("Failed unmarshalling a file"), err)
+		return ri, errors.Join(errors.New("failed unmarshalling a file"), err)
 	}
 
 	return ri, nil
 }
 
-func (a app) get_users(reviewers []string) []*gitlab.User {
+func (a app) getUsers(reviewers []string) []*gitlab.User {
 	var users []*gitlab.User
 	for _, reviewer := range reviewers {
-		queried_users, _, err := a.client.Users.ListUsers(&gitlab.ListUsersOptions{
+		queriedUsers, _, err := a.client.Users.ListUsers(&gitlab.ListUsersOptions{
 			Username: &reviewer,
 		})
 
@@ -49,29 +49,29 @@ func (a app) get_users(reviewers []string) []*gitlab.User {
 			continue
 		}
 
-		if len(queried_users) == 0 {
+		if len(queriedUsers) == 0 {
 			log.Warnf("Found no users for the username %s, skipping", reviewer)
 			continue
 		}
 
-		if len(queried_users) != 1 {
-			log.Warnf("Found more then 1 match on %s (%d); assuming first match", reviewer, len(queried_users))
+		if len(queriedUsers) != 1 {
+			log.Warnf("Found more then 1 match on %s (%d); assuming first match", reviewer, len(queriedUsers))
 		}
 
-		if queried_users[0].Username != reviewer {
-			log.Warnf("First match is not an exact match (%s != %s), skipping", queried_users[0].Username, reviewer)
+		if queriedUsers[0].Username != reviewer {
+			log.Warnf("First match is not an exact match (%s != %s), skipping", queriedUsers[0].Username, reviewer)
 			continue
 		}
 
-		users = append(users, queried_users[0])
+		users = append(users, queriedUsers[0])
 	}
 
 	return users
 }
 
-func shuffle_reviewers(reviewers *ReviewersInfo) error {
+func shuffleReviewers(reviewers *ReviewersInfo) error {
 	if reviewers == nil {
-		return errors.New("Reviewers list is nil")
+		return errors.New("reviewers list is nil")
 	}
 	for i := range reviewers.Usernames {
 		j := rand.Intn(i + 1)

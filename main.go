@@ -11,7 +11,7 @@ type app struct {
 	conf   Config
 }
 
-func get_gitlab_client(token string) *gitlab.Client {
+func getGitlabClient(token string) *gitlab.Client {
 	git, err := gitlab.NewClient(token)
 	if err != nil {
 		log.Errorf("Failed to create client: %v", err)
@@ -19,7 +19,7 @@ func get_gitlab_client(token string) *gitlab.Client {
 	return git
 }
 
-func (a *app) get_current_user() *gitlab.User {
+func (a *app) getCurrentUser() *gitlab.User {
 	user, _, err := a.client.Users.CurrentUser()
 	if err != nil {
 		log.Errorf("Failed to get current user: %v", err)
@@ -34,7 +34,7 @@ func main() {
 	conf := parseConfig("conf.toml")
 
 	app := app{
-		client: get_gitlab_client(conf.Token),
+		client: getGitlabClient(conf.Token),
 		conf: conf,
 	}
 
