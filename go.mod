@@ -3,6 +3,7 @@ module github.com/ipsavitsky/gitlab_gopher
 go 1.23.3
 
 require (
+	github.com/BurntSushi/toml v1.4.0
 	github.com/charmbracelet/log v0.4.0
 	github.com/xanzy/go-gitlab v0.114.0
 )

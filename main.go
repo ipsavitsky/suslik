@@ -13,7 +13,7 @@ type app struct {
 func get_gitlab_client(token string) *gitlab.Client {
 	git, err := gitlab.NewClient(token)
 	if err != nil {
-		log.Fatalf("Failed to create client: %v", err)
+		log.Errorf("Failed to create client: %v", err)
 	}
 	return git
 }
@@ -21,7 +21,7 @@ func get_gitlab_client(token string) *gitlab.Client {
 func (a *app) get_current_user() *gitlab.User {
 	user, _, err := a.client.Users.CurrentUser()
 	if err != nil {
-		log.Fatalf("Failed to get current user: %v", err)
+		log.Errorf("Failed to get current user: %v", err)
 	}
 	log.Debugf("Name: %s", user.Name)
 	return user
@@ -30,41 +30,41 @@ func (a *app) get_current_user() *gitlab.User {
 func main() {
 	log.SetLevel(log.DebugLevel)
 
+	conf := parseConfig("conf.toml")
+
 	app := app{
-		client: get_gitlab_client("<token>"),
+		client: get_gitlab_client(conf.Token),
 	}
 
-	list_merge_request_options := &gitlab.ListMergeRequestsOptions{
+	merge_requests, _, err := app.client.MergeRequests.ListMergeRequests(&gitlab.ListMergeRequestsOptions{
 		ReviewerID: gitlab.ReviewerID(app.get_current_user().ID),
-	}
+	})
 
-	merge_requests, _, err := app.client.MergeRequests.ListMergeRequests(list_merge_request_options)
 	if err != nil {
-		log.Fatalf("Failed to get curent merge requests: %v", err)
+		log.Errorf("Failed to get curent merge requests: %v", err)
 	}
 
 	log.Debugf("Found merge requsts assigned to: %d", len(merge_requests))
 
 	for _, merge_request := range merge_requests {
 		project_id := merge_request.ProjectID
-		file, _, err := app.client.RepositoryFiles.GetFile(project_id, "REVIEWERS", &gitlab.GetFileOptions{})
+		file, _, err := app.client.RepositoryFiles.GetFile(project_id, "REVIEWERS", &gitlab.GetFileOptions{
+			Ref: &conf.ReviewerFileRef,
+		})
 		if err != nil {
 			log.Error(err)
 			continue
 		}
 		log.Debugf("File contents: %s", file)
 
-		text := "Unassigning myself, assigning random reviewers"
-		options := &gitlab.CreateMergeRequestDiscussionOptions{
-			Body: &text,
-		}
-
 		log.Debugf("project id: %d", merge_request.ProjectID)
 		log.Debugf("merge_request iid: %d", merge_request.IID)
-		_, req, err := app.client.Discussions.CreateMergeRequestDiscussion(merge_request.ProjectID, merge_request.IID, options)
+		_, req, err := app.client.Discussions.CreateMergeRequestDiscussion(merge_request.ProjectID, merge_request.IID, &gitlab.CreateMergeRequestDiscussionOptions{
+			Body: gitlab.Ptr("Unassigning myself, assigning random reviewers"),
+		})
 
 		if err != nil {
-			log.Errorf("Failed to create a merge request discussion: %v; %s", err, req)
+			log.Errorf("Failed to create a merge request discussion: %v; %v", err, req)
 		}
 	}
 }
