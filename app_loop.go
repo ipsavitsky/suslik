@@ -13,8 +13,8 @@ import (
 func (a app) loop() {
 	for {
 		a.run()
-		log.Debug("Sleeping for 10 seconds...")
-		time.Sleep(10 * time.Second)
+		log.Debugf("Sleeping for %v...", a.conf.PollDelay)
+		time.Sleep(a.conf.PollDelay)
 	}
 }
 

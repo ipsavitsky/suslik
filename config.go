@@ -1,6 +1,8 @@
 package main
 
 import (
+	"time"
+
 	"github.com/BurntSushi/toml"
 	"github.com/charmbracelet/log"
 )
@@ -9,6 +11,7 @@ type Config struct {
 	Token           string
 	BaseURL         string
 	ReviewerFileRef string
+	PollDelay        time.Duration
 }
 
 func parseConfig(filename string) Config {
@@ -30,6 +33,11 @@ func parseConfig(filename string) Config {
 	if conf.ReviewerFileRef == "" {
 		log.Warn("Empty reviewer file ref, setting default")
 		conf.ReviewerFileRef = "main"
+	}
+
+	if conf.PollDelay == 0 {
+		log.Warn("Empty poll duration, setting default")
+		conf.PollDelay = 10 * time.Second
 	}
 
 	return conf

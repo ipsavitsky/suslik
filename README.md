@@ -23,6 +23,8 @@ token = "<token>"
 baseURL = "gitlab.example.com/api/v4"
 # Set the branch that the bot will pick per-repo config from
 reviewerFileRef = "main"
+# Set the delay amount after each poll for each merge request (in time.Duration format)
+pollDelay = "10s"
 ```
 
 After that, the bot expects a `reviewers.yaml` file that will look like this:
