@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/charmbracelet/log"
@@ -58,24 +57,36 @@ func (a app) run() {
 		reviewerUsers := a.getUsers(reviewersInfo.Usernames)
 		log.Debugf("Got %d reviewer users", len(reviewerUsers))
 
-		currentAssignedReviewers := len(mergeRequest.Reviewers)
+		var reviewersIDs []int
+		for _, existingReviewer := range mergeRequest.Reviewers {
+			if existingReviewer.ID == a.getCurrentUser().ID {
+				log.Debug("Skipping bot user")
+				continue
+			}
+			reviewersIDs = append(reviewersIDs, existingReviewer.ID)
+		}
+
+		currentAssignedReviewers := len(reviewersIDs)
 		amountOfUsersToAssign := reviewersInfo.ReviewThreshold - currentAssignedReviewers
 		log.Debugf("There are %d reviewers already assigned", currentAssignedReviewers)
 		log.Debugf("Assigning %d users", amountOfUsersToAssign)
 
-		var sb strings.Builder
-		sb.WriteString("/assign_reviewer")
-		for i := 0; i < min(len(reviewerUsers), amountOfUsersToAssign); i++ {
-			sb.WriteString(fmt.Sprintf(" @%s", reviewerUsers[i].Username))
+		for i := 0; i < min(amountOfUsersToAssign, len(reviewerUsers)); i++ {
+			reviewersIDs = append(reviewersIDs, reviewerUsers[i].ID)
 		}
-		sb.WriteString(fmt.Sprintf("\n/unassign_reviewer @%s", a.getCurrentUser().Username))
-		log.Debugf("Generated string is: %s", sb.String())
 
 		_, req, err := a.client.Discussions.CreateMergeRequestDiscussion(mergeRequest.ProjectID, mergeRequest.IID, &gitlab.CreateMergeRequestDiscussionOptions{
-			Body: gitlab.Ptr(fmt.Sprintf("Unassigning myself, assigning random reviewers\n%s", sb.String())),
+			Body: gitlab.Ptr("Unassigning myself, assigning random reviewers"),
 		})
 		if err != nil {
 			log.Errorf("Failed to create a merge request discussion: %v; %v", err, req)
+		}
+
+		_, req, err = a.client.MergeRequests.UpdateMergeRequest(mergeRequest.ProjectID, mergeRequest.IID, &gitlab.UpdateMergeRequestOptions{
+			ReviewerIDs: gitlab.Ptr(reviewersIDs),
+		})
+		if err != nil {
+			log.Errorf("Failed to assign reviewers: %v; %v", err, req)
 		}
 	}
 }
