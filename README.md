@@ -19,6 +19,8 @@ Right now, Gitlab Gopher supports two configuration options:
 ``` toml
 # Set your GitLab instance token
 token = "<token>"
+# Set the base URL for the GitLab instance
+baseURL = "gitlab.example.com/api/v4"
 # Set the branch that the bot will pick per-repo config from
 reviewerFileRef = "main"
 ```

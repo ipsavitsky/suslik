@@ -11,8 +11,11 @@ type app struct {
 	conf   Config
 }
 
-func getGitlabClient(token string) *gitlab.Client {
-	git, err := gitlab.NewClient(token)
+func getGitlabClient(token string, baseURL string) *gitlab.Client {
+	git, err := gitlab.NewClient(
+		token,
+		gitlab.WithBaseURL(baseURL),
+	)
 	if err != nil {
 		log.Errorf("Failed to create client: %v", err)
 	}
@@ -34,7 +37,7 @@ func main() {
 	conf := parseConfig("conf.toml")
 
 	app := app{
-		client: getGitlabClient(conf.Token),
+		client: getGitlabClient(conf.Token, conf.BaseURL),
 		conf: conf,
 	}
 
