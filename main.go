@@ -1,6 +1,8 @@
 package main
 
 import (
+	"flag"
+
 	"github.com/charmbracelet/log"
 
 	gitlab "github.com/xanzy/go-gitlab"
@@ -34,12 +36,27 @@ func (a *app) getCurrentUser() *gitlab.User {
 func main() {
 	log.SetLevel(log.DebugLevel)
 
-	conf := parseConfig("conf.toml")
+	var confFile string
+	var mode string
+
+	flag.StringVar(&confFile, "c", "conf.toml", "Path to configuration file")
+	flag.StringVar(&mode, "m", "standalone", "Gitlab Gopher mode (ci or standalone)")
+	flag.Parse()
+
+	if (mode != "standalone") && (mode != "ci") {
+		log.Fatalf("Unknown mode: %s", mode)
+	}
+
+	conf := parseConfig(confFile)
 
 	app := app{
 		client: getGitlabClient(conf.Token, conf.BaseURL),
-		conf: conf,
+		conf:   conf,
 	}
 
-	app.loop()
+	if mode == "standalone" {
+		app.loop()
+	} else {
+		app.run()
+	}
 }

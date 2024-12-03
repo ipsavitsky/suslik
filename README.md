@@ -14,7 +14,7 @@ Searching the internet or GitLab handbook on existence of such feature yields no
 
 ## Configuration
 
-Right now, Gitlab Gopher supports two configuration options:
+Right now, Gitlab Gopher supports the following configuration options:
 
 ``` toml
 # Set your GitLab instance token
@@ -40,5 +40,15 @@ usernames:
 > Why is this not a CODEOWNERS file?
 
 This is the goal, but I was too lazy to implement complex logic of a `CODEOWNERS` file.
+
+Also, there are configuration options in place:
+
+```
+Usage of ./gitlab_gopher:
+  -c string
+    	Path to configuration file (default "conf.toml")
+  -m string
+    	Gitlab Gopher mode (ci or standalone) (default "standalone")
+```
 
 After deploying and putting all configuration in place, assign the bot as a reviewer to merge request. The bot will unassign itself, select random reviewers out of the list and assign them. If some reviewers were already assigned, they will not be unassigned, but instead the bot will assign reviewers up to the threshold. For example, if 1 reviewer is alread assigned and the threshold is set to 3, 2 additional reviewers will be randomly assigned.
