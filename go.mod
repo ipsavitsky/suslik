@@ -1,4 +1,4 @@
-module github.com/ipsavitsky/gitlab_gopher
+module github.com/ipsavitsky/suslik
 
 go 1.23.3
 

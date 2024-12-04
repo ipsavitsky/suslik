@@ -1,4 +1,4 @@
-# Gitlab Gopher
+# suslik
 
 This bot exists to perform review roulette in GitLab.
 
@@ -14,7 +14,7 @@ Searching the internet or GitLab handbook on existence of such feature yields no
 
 ## Configuration
 
-Right now, Gitlab Gopher supports the following configuration options:
+Right now, suslik supports the following configuration options:
 
 ``` toml
 # Set your GitLab instance token
@@ -44,7 +44,7 @@ This is the goal, but I was too lazy to implement complex logic of a `CODEOWNERS
 Also, there are configuration options in place:
 
 ```
-Usage of ./gitlab_gopher:
+Usage of ./suslik:
   -c string
     	Path to configuration file (default "conf.toml")
   -m string

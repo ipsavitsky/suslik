@@ -40,7 +40,7 @@ func main() {
 	var mode string
 
 	flag.StringVar(&confFile, "c", "conf.toml", "Path to configuration file")
-	flag.StringVar(&mode, "m", "standalone", "Gitlab Gopher mode (ci or standalone)")
+	flag.StringVar(&mode, "m", "standalone", "suslik mode (ci or standalone)")
 	flag.Parse()
 
 	if (mode != "standalone") && (mode != "ci") {
