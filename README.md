@@ -1,6 +1,8 @@
 # suslik
 
-This bot exists to perform review roulette in GitLab.
+> Suslik (from: суслик, pronounced ˈsuslʲɪk) - a gopher
+
+This bot performs review roulette in GitLab.
 
 ## Isn't it already part of GitLab?
 
@@ -17,8 +19,8 @@ Searching the internet or GitLab handbook on existence of such feature yields no
 Right now, suslik supports the following configuration options:
 
 ``` toml
-# Set your GitLab instance token
-token = "<token>"
+# Set your GitLab instance token (or set the `SUSLIK_GITLAB_TOKEN` envvar)
+token = "<token>" # This token should have developer access and `api`, `read_user` and `read_repository` scopes
 # Set the base URL for the GitLab instance
 baseURL = "gitlab.example.com/api/v4"
 # Set the branch that the bot will pick per-repo config from
