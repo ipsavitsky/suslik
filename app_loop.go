@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/charmbracelet/log"
@@ -71,12 +72,15 @@ func (a app) run() {
 		log.Debugf("There are %d reviewers already assigned", currentAssignedReviewers)
 		log.Debugf("Assigning %d users", amountOfUsersToAssign)
 
+		var reviewersFormattedUsernames []string
+
 		for i := 0; i < min(amountOfUsersToAssign, len(reviewerUsers)); i++ {
 			reviewersIDs = append(reviewersIDs, reviewerUsers[i].ID)
+			reviewersFormattedUsernames = append(reviewersFormattedUsernames, "`@"+reviewerUsers[i].Username+"`")
 		}
 
 		_, req, err := a.client.Notes.CreateMergeRequestNote(mergeRequest.ProjectID, mergeRequest.IID, &gitlab.CreateMergeRequestNoteOptions{
-			Body: gitlab.Ptr("Unassigning myself, assigning random reviewers"),
+			Body: gitlab.Ptr(fmt.Sprintf("Unassigning myself, assigning random reviewers (%s)", strings.Join(reviewersFormattedUsernames, ", "))),
 		})
 		if err != nil {
 			log.Errorf("Failed to create a merge request note: %v; %v", err, req)
