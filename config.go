@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"time"
 
 	"github.com/BurntSushi/toml"
@@ -11,7 +12,7 @@ type Config struct {
 	Token           string
 	BaseURL         string
 	ReviewerFileRef string
-	PollDelay        time.Duration
+	PollDelay       time.Duration
 }
 
 func parseConfig(filename string) Config {
@@ -22,7 +23,12 @@ func parseConfig(filename string) Config {
 	}
 
 	if conf.Token == "" {
-		log.Fatal("Empty GitLab token")
+		log.Warn("No token in configuration, reading environment")
+		token, found := os.LookupEnv("SUSLIK_GITLAB_TOKEN")
+		if !found  {
+			log.Fatal("Empty GitLab token")
+		}
+		conf.Token = token
 	}
 
 	if conf.BaseURL == "" {
