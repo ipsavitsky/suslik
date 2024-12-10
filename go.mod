@@ -5,7 +5,7 @@ go 1.23.3
 require (
 	github.com/BurntSushi/toml v1.4.0
 	github.com/charmbracelet/log v0.4.0
-	github.com/xanzy/go-gitlab v0.114.0
+	gitlab.com/gitlab-org/api/client-go v0.116.0
 	golang.org/x/exp v0.0.0-20231006140011-7918f672742d
 	gopkg.in/yaml.v3 v3.0.1
 )

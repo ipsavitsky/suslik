@@ -25,7 +25,7 @@ func parseConfig(filename string) Config {
 	if conf.Token == "" {
 		log.Warn("No token in configuration, reading environment")
 		token, found := os.LookupEnv("SUSLIK_GITLAB_TOKEN")
-		if !found  {
+		if !found {
 			log.Fatal("Empty GitLab token")
 		}
 		conf.Token = token

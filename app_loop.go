@@ -7,7 +7,7 @@ import (
 
 	"github.com/charmbracelet/log"
 
-	gitlab "github.com/xanzy/go-gitlab"
+	gitlab "gitlab.com/gitlab-org/api/client-go"
 )
 
 func (a app) loop() {

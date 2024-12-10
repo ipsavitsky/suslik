@@ -5,14 +5,14 @@ import (
 	"errors"
 
 	"github.com/charmbracelet/log"
-	"github.com/xanzy/go-gitlab"
+	"gitlab.com/gitlab-org/api/client-go"
 	"golang.org/x/exp/rand"
 	"gopkg.in/yaml.v3"
 )
 
 type ReviewersInfo struct {
-	ReviewThreshold int `yaml:"reviewThreshold"`
-	Usernames []string  `yaml:"usernames"`
+	ReviewThreshold int      `yaml:"reviewThreshold"`
+	Usernames       []string `yaml:"usernames"`
 }
 
 func (a app) getReviewersInfo(mergeRequest *gitlab.MergeRequest) (ReviewersInfo, error) {
