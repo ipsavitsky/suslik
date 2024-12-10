@@ -11,10 +11,11 @@ import (
 )
 
 func (a app) loop() {
+	runTicker := time.NewTicker(a.conf.PollDelay)
 	for {
 		a.run()
-		log.Debugf("Sleeping for %v...", a.conf.PollDelay)
-		time.Sleep(a.conf.PollDelay)
+		log.Debugf("Sleeping...")
+		<-runTicker.C
 	}
 }
 
