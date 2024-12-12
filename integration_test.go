@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"testing"
-	"time"
 
 	"gitlab.com/gitlab-org/api/client-go"
 )
@@ -24,7 +23,7 @@ func init() {
 		gitlab.WithBaseURL("http://localhost:9999/api/v4"),
 	)
 	if err != nil {
-		panic("failed to create test client: " + err.Error()) // lintignore: R009 // TODO: Resolve this tfproviderlint issue
+		panic("failed to create test client: " + err.Error())
 	}
 
 	TestGitlabClient = client
@@ -54,14 +53,14 @@ func CreateProject(t *testing.T) *gitlab.Project {
 	return project
 }
 
-func CreateUser(t *testing.T) *gitlab.User {
+func CreateUserWithToken(t *testing.T, username string) (*gitlab.User, *gitlab.PersonalAccessToken) {
 	t.Helper()
 
 	options := &gitlab.CreateUserOptions{
-		Name:     gitlab.Ptr("gaba"),
-		Username: gitlab.Ptr("goo"),
-		Email:    gitlab.Ptr("test@example.invalid"),
-		Password: gitlab.Ptr("hehehahu"),
+		Name:     &username,
+		Username: &username,
+		Email:    gitlab.Ptr(fmt.Sprintf("%s@example.invalid", username)),
+		Password: gitlab.Ptr("insecure1111"),
 	}
 
 	user, _, err := TestGitlabClient.Users.CreateUser(options)
@@ -75,7 +74,17 @@ func CreateUser(t *testing.T) *gitlab.User {
 		}
 	})
 
-	return user
+	token_options := &gitlab.CreatePersonalAccessTokenOptions{
+		Name: gitlab.Ptr("test_token"),
+		Scopes: &[]string{"api", "read_user", "write_repository"},
+	}
+
+	token, _, err := TestGitlabClient.Users.CreatePersonalAccessToken(user.ID, token_options)
+	if err != nil {
+		t.Fatalf("could not create token for user: %v", err)
+	}
+
+	return user, token
 }
 
 func CreateBranchInProject(t *testing.T, project *gitlab.Project, branchName string) *gitlab.Branch {
@@ -130,9 +139,20 @@ func CreateMergeRequestWithReviewer(t *testing.T, project *gitlab.Project, revie
 	return mergeRequest
 }
 
+func GetReviewersOnMergeRequest(t *testing.T, project *gitlab.Project, mr *gitlab.MergeRequest) []*gitlab.MergeRequestReviewer {
+	t.Helper()
+
+	reviewers, _, err := TestGitlabClient.MergeRequests.GetMergeRequestReviewers(project.ID, mr.IID)
+	if err != nil {
+		t.Fatalf("could not get reviewers: %v", err)
+	}
+
+	return reviewers
+}
+
 func TestBasicFunctionality(t *testing.T) {
 	project := CreateProject(t)
-	user := CreateUser(t)
+	user, _ := CreateUserWithToken(t, "test_user")
 
 	reviewersFile := fmt.Sprintf(`reviewThreshold: 1
 usernames:
@@ -141,19 +161,11 @@ usernames:
 	AddFileToProject(t, project, "reviewers.yaml", reviewersFile, project.DefaultBranch)
 	branch := CreateBranchInProject(t, project, "test-branch")
 	AddFileToProject(t, project, "test", "this is a test file", branch.Name)
-
-	CreateMergeRequestWithReviewer(t, project, user, branch.Name, project.DefaultBranch)
-
-	time.Sleep(10 * time.Second)
-
-	token, found := os.LookupEnv("SUSLIK_GITLAB_TOKEN")
-
-	if !found {
-		t.Fail()
-	}
+	suslik_account, suslik_token := CreateUserWithToken(t, "suslik")
+	mr := CreateMergeRequestWithReviewer(t, project, suslik_account, branch.Name, project.DefaultBranch)
 
 	conf := Config{
-		Token:           token,
+		Token:           suslik_token.Token,
 		BaseURL:         "http://localhost:9999",
 		ReviewerFileRef: "main",
 		PollDelay:       0,
@@ -165,4 +177,9 @@ usernames:
 	}
 
 	app.run()
+
+	reviewersAfterRun := GetReviewersOnMergeRequest(t, project, mr)
+	if reviewersAfterRun[0].User.ID != user.ID {
+		t.Fatalf("Assigned wrong user: %d(%s) != %d(%s)", reviewersAfterRun[0].User.ID, reviewersAfterRun[0].User.Username, user.ID, user.Username)
+	}
 }
