@@ -76,7 +76,7 @@ func CreateUserWithToken(t *testing.T, username string) (*gitlab.User, *gitlab.P
 
 	token_options := &gitlab.CreatePersonalAccessTokenOptions{
 		Name: gitlab.Ptr("test_token"),
-		Scopes: &[]string{"api", "read_user", "write_repository"},
+		Scopes: &[]string{"api", "read_user"},
 	}
 
 	token, _, err := TestGitlabClient.Users.CreatePersonalAccessToken(user.ID, token_options)
@@ -150,9 +150,24 @@ func GetReviewersOnMergeRequest(t *testing.T, project *gitlab.Project, mr *gitla
 	return reviewers
 }
 
+func AddUserToProject(t *testing.T, user *gitlab.User, project *gitlab.Project) {
+	t.Helper()
+
+	options := &gitlab.AddProjectMemberOptions{
+		UserID: user.ID,
+		AccessLevel: gitlab.Ptr(gitlab.DeveloperPermissions),
+	}
+
+	_, _, err := TestGitlabClient.ProjectMembers.AddProjectMember(project.ID, options)
+	if err != nil {
+		t.Fatalf("could not add user as a project member: %v", err)
+	}
+}
+
 func TestBasicFunctionality(t *testing.T) {
 	project := CreateProject(t)
 	user, _ := CreateUserWithToken(t, "test_user")
+	AddUserToProject(t, user, project)
 
 	reviewersFile := fmt.Sprintf(`reviewThreshold: 1
 usernames:
@@ -162,11 +177,12 @@ usernames:
 	branch := CreateBranchInProject(t, project, "test-branch")
 	AddFileToProject(t, project, "test", "this is a test file", branch.Name)
 	suslik_account, suslik_token := CreateUserWithToken(t, "suslik")
+	AddUserToProject(t, suslik_account, project)
 	mr := CreateMergeRequestWithReviewer(t, project, suslik_account, branch.Name, project.DefaultBranch)
 
 	conf := Config{
 		Token:           suslik_token.Token,
-		BaseURL:         "http://localhost:9999",
+		BaseURL:         "http://localhost:9999/api/v4",
 		ReviewerFileRef: "main",
 		PollDelay:       0,
 	}
@@ -179,6 +195,9 @@ usernames:
 	app.run()
 
 	reviewersAfterRun := GetReviewersOnMergeRequest(t, project, mr)
+	for _, reviewer := range reviewersAfterRun {
+		t.Logf("Reviewer username: %s", reviewer.User.Username)
+	}
 	if reviewersAfterRun[0].User.ID != user.ID {
 		t.Fatalf("Assigned wrong user: %d(%s) != %d(%s)", reviewersAfterRun[0].User.ID, reviewersAfterRun[0].User.Username, user.ID, user.Username)
 	}

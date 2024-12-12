@@ -9,8 +9,8 @@ GITLAB_ROOT_PAT=$(curl \
     --silent \
     --request POST \
     --header "Authorization: Bearer $GITLAB_ROOT_OAUTH" \
-    --data "name=lorry" \
-    --data "scopes[]=api,read_user,write_repository" \
+    --data "name=suslik" \
+    --data "scopes[]=api,read_user" \
     localhost:9999/api/v4/users/1/personal_access_tokens | jq -r ".token")
 
 printf "setting suslik pat as %s\n" "$GITLAB_ROOT_PAT"

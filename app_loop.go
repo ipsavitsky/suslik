@@ -34,6 +34,7 @@ func (a app) run() {
 	}()
 
 	mergeRequests, _, err := a.client.MergeRequests.ListMergeRequests(&gitlab.ListMergeRequestsOptions{
+		Scope:      gitlab.Ptr("all"),
 		ReviewerID: gitlab.ReviewerID(a.getCurrentUser().ID),
 	})
 
