@@ -1,4 +1,5 @@
 .direnv
-gitlab_gopher
 conf.toml
 tmp
+suslik
+.gitlab-container
