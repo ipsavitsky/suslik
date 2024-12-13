@@ -14,6 +14,7 @@
             air
             gopls
             go-tools
+            jq
           ];
         };
       };
