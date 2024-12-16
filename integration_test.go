@@ -38,9 +38,6 @@ usernames:
 	app.run()
 
 	reviewersAfterRun := tu.GetReviewersOnMergeRequest(t, project, mr)
-	for _, reviewer := range reviewersAfterRun {
-		t.Logf("Reviewer username: %s", reviewer.User.Username)
-	}
 	if reviewersAfterRun[0].User.ID != user.ID {
 		t.Fatalf("Assigned wrong user: %d(%s) != %d(%s)", reviewersAfterRun[0].User.ID, reviewersAfterRun[0].User.Username, user.ID, user.Username)
 	}

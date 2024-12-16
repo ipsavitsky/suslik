@@ -49,6 +49,7 @@ func (a app) run() {
 		reviewersInfo, err := a.getReviewersInfo(mergeRequest)
 		if err != nil {
 			log.Errorf("Failed to get reviewers info: %v", err)
+			a.ReportErrorOnMergeRequest(mergeRequest, err)
 			continue
 		}
 		err = shuffleReviewers(&reviewersInfo)
@@ -57,7 +58,7 @@ func (a app) run() {
 			continue
 		}
 
-		reviewerUsers := a.getUsers(reviewersInfo.Usernames)
+		reviewerUsers, warnings := a.getUsers(reviewersInfo.Usernames)
 		log.Debugf("Got %d reviewer users", len(reviewerUsers))
 
 		var reviewersIDs []int
@@ -81,8 +82,17 @@ func (a app) run() {
 			reviewersFormattedUsernames = append(reviewersFormattedUsernames, "`@"+reviewerUsers[i].Username+"`")
 		}
 
+		assignmentBody := fmt.Sprintf("Unassigning myself, assigning random reviewers (%s)<br>", strings.Join(reviewersFormattedUsernames, ", "))
+
+		if len(warnings) != 0 {
+			assignmentBody += fmt.Sprintf("⚠ Warnings:\n")
+			for _, warning := range warnings {
+				assignmentBody += fmt.Sprintf("- %s\n", warning)
+			}
+		}
+
 		_, req, err := a.client.Notes.CreateMergeRequestNote(mergeRequest.ProjectID, mergeRequest.IID, &gitlab.CreateMergeRequestNoteOptions{
-			Body: gitlab.Ptr(fmt.Sprintf("Unassigning myself, assigning random reviewers (%s)", strings.Join(reviewersFormattedUsernames, ", "))),
+			Body: &assignmentBody,
 		})
 		if err != nil {
 			log.Errorf("Failed to create a merge request note: %v; %v", err, req)

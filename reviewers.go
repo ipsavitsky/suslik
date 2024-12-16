@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/base64"
 	"errors"
+	"fmt"
 
 	"github.com/charmbracelet/log"
 	"gitlab.com/gitlab-org/api/client-go"
@@ -37,36 +38,45 @@ func (a app) getReviewersInfo(mergeRequest *gitlab.MergeRequest) (ReviewersInfo,
 	return ri, nil
 }
 
-func (a app) getUsers(reviewers []string) []*gitlab.User {
+func (a app) getUsers(reviewers []string) ([]*gitlab.User, []string) {
 	var users []*gitlab.User
+	var warnings []string
 	for _, reviewer := range reviewers {
 		queriedUsers, _, err := a.client.Users.ListUsers(&gitlab.ListUsersOptions{
 			Username: &reviewer,
 		})
 
 		if err != nil {
-			log.Warnf("Error querying for user %s: %v", reviewer, err)
+			logString := fmt.Sprintf("Error querying for user `@%s`: %v", reviewer, err)
+			log.Warn(logString)
+			warnings = append(warnings, logString)
 			continue
 		}
 
 		if len(queriedUsers) == 0 {
-			log.Warnf("Found no users for the username %s, skipping", reviewer)
+			logString := fmt.Sprintf("Found no users for the username `@%s`", reviewer)
+			log.Warn(logString)
+			warnings = append(warnings, logString)
 			continue
 		}
 
 		if len(queriedUsers) != 1 {
-			log.Warnf("Found more then 1 match on %s (%d); assuming first match", reviewer, len(queriedUsers))
+			logString := fmt.Sprintf("Found more then 1 match on `@%s`; assuming first match", reviewer)
+			log.Warn(logString)
+			warnings = append(warnings, logString)
 		}
 
 		if queriedUsers[0].Username != reviewer {
-			log.Warnf("First match is not an exact match (%s != %s), skipping", queriedUsers[0].Username, reviewer)
+			logString := fmt.Sprintf("First match is not an exact match (`@%s` != `@%s`)", queriedUsers[0].Username, reviewer)
+			log.Warn(logString)
+			warnings = append(warnings, logString)
 			continue
 		}
 
 		users = append(users, queriedUsers[0])
 	}
 
-	return users
+	return users, warnings
 }
 
 func shuffleReviewers(reviewers *ReviewersInfo) error {
