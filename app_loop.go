@@ -64,8 +64,11 @@ func (a app) run() {
 		var reviewersIDs []int
 		for _, existingReviewer := range mergeRequest.Reviewers {
 			if existingReviewer.ID == a.getCurrentUser().ID {
-				log.Debug("Skipping bot user")
+				log.Debug("Skipping bot user", "id", existingReviewer.ID, "username", existingReviewer.Username)
 				continue
+			}
+			if existingReviewer.ID == mergeRequest.Author.ID {
+				log.Debug("Skipping MR author", "id", existingReviewer.ID, "username", existingReviewer.Username)
 			}
 			reviewersIDs = append(reviewersIDs, existingReviewer.ID)
 		}
