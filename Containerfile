@@ -6,6 +6,6 @@ RUN go build
 
 FROM docker.io/library/alpine:3.20
 
-COPY --from=builder go/suslik .
+COPY --from=builder go/suslik /usr/local/bin
 
-ENTRYPOINT ./suslik
+CMD ["suslik"]
