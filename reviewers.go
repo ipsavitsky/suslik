@@ -4,10 +4,10 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"math/rand/v2"
 
 	"github.com/charmbracelet/log"
 	"gitlab.com/gitlab-org/api/client-go"
-	"golang.org/x/exp/rand"
 	"gopkg.in/yaml.v3"
 )
 
@@ -84,7 +84,7 @@ func shuffleReviewers(reviewers *ReviewersInfo) error {
 		return errors.New("reviewers list is nil")
 	}
 	for i := range reviewers.Usernames {
-		j := rand.Intn(i + 1)
+		j := rand.IntN(i + 1)
 		reviewers.Usernames[i], reviewers.Usernames[j] = reviewers.Usernames[j], reviewers.Usernames[i]
 	}
 	return nil

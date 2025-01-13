@@ -80,9 +80,18 @@ func (a app) run() {
 
 		var reviewersFormattedUsernames []string
 
-		for i := 0; i < min(amountOfUsersToAssign, len(reviewerUsers)); i++ {
+		i := 0
+		added_reviewers := 0
+		for added_reviewers < min(amountOfUsersToAssign, len(reviewerUsers)) {
+			if reviewerUsers[i].ID == mergeRequest.Author.ID {
+				log.Debug("Skipping MR author in reviewer list", "id", reviewerUsers[i].ID, "username", reviewerUsers[i].ID)
+				i++
+				continue
+			}
 			reviewersIDs = append(reviewersIDs, reviewerUsers[i].ID)
 			reviewersFormattedUsernames = append(reviewersFormattedUsernames, "`@"+reviewerUsers[i].Username+"`")
+			added_reviewers++
+			i++
 		}
 
 		assignmentBody := fmt.Sprintf("Unassigning myself, assigning random reviewers (%s)<br>", strings.Join(reviewersFormattedUsernames, ", "))
