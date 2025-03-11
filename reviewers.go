@@ -16,7 +16,7 @@ type ReviewersInfo struct {
 	Usernames       []string `yaml:"usernames"`
 }
 
-func (a app) getReviewersInfo(mergeRequest *gitlab.MergeRequest) (ReviewersInfo, error) {
+func (a app) getReviewersInfo(mergeRequest *gitlab.BasicMergeRequest) (ReviewersInfo, error) {
 	var ri ReviewersInfo
 	file, _, err := a.client.RepositoryFiles.GetFile(mergeRequest.ProjectID, "reviewers.yaml", &gitlab.GetFileOptions{
 		Ref: &a.conf.ReviewerFileRef,

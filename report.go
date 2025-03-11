@@ -7,7 +7,7 @@ import (
 	gitlab "gitlab.com/gitlab-org/api/client-go"
 )
 
-func (a app) ReportErrorOnMergeRequest(mr *gitlab.MergeRequest, error error) {
+func (a app) ReportErrorOnMergeRequest(mr *gitlab.BasicMergeRequest, error error) {
 	_, _, err := a.client.Notes.CreateMergeRequestNote(mr.ProjectID, mr.IID, &gitlab.CreateMergeRequestNoteOptions{
 		Body: gitlab.Ptr(fmt.Sprintf("🚨 %v", error)),
 	})
