@@ -1,4 +1,5 @@
-//+build integration
+//go:build integration
+// +build integration
 
 package main
 
@@ -30,6 +31,7 @@ usernames:
 		BaseURL:         "http://localhost:9999/api/v4",
 		ReviewerFileRef: "main",
 		PollDelay:       0,
+		Mode:            CI,
 	}
 
 	app := app{

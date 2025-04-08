@@ -8,14 +8,22 @@ import (
 	"github.com/charmbracelet/log"
 )
 
+type ModeType string
+
+const (
+	CI         ModeType = "ci"
+	Standalone ModeType = "standalone"
+)
+
 type Config struct {
 	Token           string
 	BaseURL         string
 	ReviewerFileRef string
+	Mode            ModeType
 	PollDelay       time.Duration
 }
 
-func parseConfig(filename string) Config {
+func parseConfig(filename string, mode string) Config {
 	var conf Config
 	_, err := toml.DecodeFile(filename, &conf)
 	if err != nil {
@@ -44,6 +52,14 @@ func parseConfig(filename string) Config {
 	if conf.PollDelay == 0 {
 		log.Warn("Empty poll duration, setting default")
 		conf.PollDelay = 10 * time.Second
+	}
+
+	if mode == string(Standalone) {
+		conf.Mode = Standalone
+	} else if mode == string(CI) {
+		conf.Mode = CI
+	} else {
+		log.Fatal("Unknown mode: %s", mode)
 	}
 
 	return conf

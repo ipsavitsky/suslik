@@ -40,21 +40,17 @@ func main() {
 	var mode string
 
 	flag.StringVar(&confFile, "c", "conf.toml", "Path to configuration file")
-	flag.StringVar(&mode, "m", "standalone", "suslik mode (ci or standalone)")
+	flag.StringVar(&mode, "m", string(Standalone), "suslik mode (ci or standalone)")
 	flag.Parse()
 
-	if (mode != "standalone") && (mode != "ci") {
-		log.Fatalf("Unknown mode: %s", mode)
-	}
-
-	conf := parseConfig(confFile)
+	conf := parseConfig(confFile, mode)
 
 	app := app{
 		client: getGitlabClient(conf.Token, conf.BaseURL),
 		conf:   conf,
 	}
 
-	if mode == "standalone" {
+	if conf.Mode == Standalone {
 		app.loop()
 	} else {
 		app.run()
