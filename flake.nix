@@ -25,6 +25,12 @@
             src = ./.;
             vendorHash = goVendorHash;
           };
+          suslik-image = pkgs.dockerTools.buildImage {
+            name = "suslik";
+            config = {
+              Cmd = [ "${suslik}/bin/suslik" ];
+            };
+          };
         };
 
         devShells = {
