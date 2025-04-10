@@ -50,7 +50,6 @@ func (a app) run() {
 		reviewersInfo, err := a.getReviewersInfo(mergeRequest)
 		if err != nil {
 			log.Errorf("Failed to get reviewers info: %v", err)
-			a.ReportErrorOnMergeRequest(mergeRequest, err)
 			continue
 		}
 		err = shuffleReviewers(&reviewersInfo)
