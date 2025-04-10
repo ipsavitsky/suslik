@@ -85,10 +85,19 @@ func (a app) run() {
 		added_reviewers := 0
 		for added_reviewers < min(amountOfUsersToAssign, len(reviewerUsers)) {
 			if reviewerUsers[i].ID == mergeRequest.Author.ID {
-				log.Debug("Skipping MR author in reviewer list", "id", reviewerUsers[i].ID, "username", reviewerUsers[i].ID)
+				log.Debug("Skipping MR author in reviewer list", "id", reviewerUsers[i].ID, "username", reviewerUsers[i].Username)
 				i++
 				continue
 			}
+
+			for _, reviewer := range reviewersIDs {
+				if reviewerUsers[i].ID == reviewer {
+					log.Debug("Reviewer already assigned", "id", reviewer, "username", reviewerUsers[i].Username)
+					i++
+					continue
+				}
+			}
+
 			reviewersIDs = append(reviewersIDs, reviewerUsers[i].ID)
 			reviewersFormattedUsernames = append(reviewersFormattedUsernames, "`@"+reviewerUsers[i].Username+"`")
 			added_reviewers++
