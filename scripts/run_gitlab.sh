@@ -16,7 +16,13 @@ mkdir -p "$GITLAB_HOME/config"
 mkdir -p "$GITLAB_HOME/logs"
 mkdir -p "$GITLAB_HOME/data"
 
-$DOCKER run --rm -ti \
+if [ "$1" == "-ci" ]; then
+    DOCKER_ARGS="-d"
+else
+    DOCKER_ARGS="--rm -ti"
+fi
+
+$DOCKER run $DOCKER_ARGS \
   --hostname gitlab.example.com \
   --env GITLAB_ROOT_PASSWORD=$GITLAB_INSECURE_PASSWORD \
   --env GITLAB_OMNIBUS_CONFIG="$(cat "${script_dir}"/gitlab_config.rb)" \

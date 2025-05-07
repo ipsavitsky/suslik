@@ -1,0 +1,17 @@
+name: test
+
+on: [workflow_call]
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+      - uses: gacts/install-podman@v1
+      - run: ./scripts/run_gitlab.sh -ci
+      - run: ./scripts/wait_for_gitlab.sh
+      - run: |
+          . ./scripts/request_gitlab_token.sh
+          echo "SUSLIK_GITLAB_TOKEN=$SUSLIK_GITLAB_TOKEN" >> $GITHUB_ENV
+      - run: go test -tags integration
