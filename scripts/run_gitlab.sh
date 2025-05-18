@@ -4,7 +4,7 @@ set -e
 
 script_dir=$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")
 
-GITLAB_VERSION="17.9.0-ce.0"
+GITLAB_VERSION="18.0.0-ce.0"
 GITLAB_HTTP_PORT=9999
 GITLAB_INSECURE_PASSWORD=insecure1111
 
