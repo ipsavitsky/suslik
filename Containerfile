@@ -4,7 +4,7 @@ COPY . .
 
 RUN go build
 
-FROM docker.io/library/alpine:3.21
+FROM docker.io/library/alpine:3.22
 
 COPY --from=builder go/suslik /usr/local/bin
 
