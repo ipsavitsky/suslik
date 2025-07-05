@@ -56,6 +56,8 @@ gitlab.com/gitlab-org/api/client-go v0.131.0 h1:a431AKWkrSO5dgY5o5okFjxpANhkGpzx
 gitlab.com/gitlab-org/api/client-go v0.131.0/go.mod h1:U83AmpPrAir8NH31T/BstwZcJzS/nGZptOXtGjPZrbI=
 gitlab.com/gitlab-org/api/client-go v0.132.0 h1:6W4VAmbWVbjUEoQiybPAn6bMP5v0Ga9jeTJaRtc7zfI=
 gitlab.com/gitlab-org/api/client-go v0.132.0/go.mod h1:U83AmpPrAir8NH31T/BstwZcJzS/nGZptOXtGjPZrbI=
+gitlab.com/gitlab-org/api/client-go v0.133.0 h1:Y+t86XrCUY24A1yLMU1mYgC1/kvUTohLPG7bUJs692M=
+gitlab.com/gitlab-org/api/client-go v0.133.0/go.mod h1:crkp9sCwMQ8gDwuMLgk11sDT336t6U3kESBT0BGsOBo=
 golang.org/x/exp v0.0.0-20250620022241-b7579e27df2b h1:M2rDM6z3Fhozi9O7NWsxAkg/yqS/lQJ6PmkyIV3YP+o=
 golang.org/x/exp v0.0.0-20250620022241-b7579e27df2b/go.mod h1:3//PLf8L/X+8b4vuAfHzxeRUl04Adcb341+IGKfnqS8=
 golang.org/x/oauth2 v0.30.0 h1:dnDm7JmhM45NNpd8FDDeLhK6FwqbOf4MLCM9zb1BOHI=
