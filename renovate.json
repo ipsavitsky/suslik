@@ -1,3 +1,11 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json"
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "postUpdateOptions": [
+    "gomodTidy"
+  ],
+  "postUpgradeTasks": {
+    "commands": ["./scripts/vendor_hash.sh --update"],
+    "fileFilters": ["./nix/goVendorHash.nix"],
+    "executionMode": "branch"
+  }
 }
