@@ -3,6 +3,9 @@
   "postUpdateOptions": [
     "gomodTidy"
   ],
+  "allowedCommands": [
+    "^./scripts/vendor_hash.sh --update$"
+  ],
   "postUpgradeTasks": {
     "commands": ["./scripts/vendor_hash.sh --update"],
     "fileFilters": ["./nix/goVendorHash.nix"],
