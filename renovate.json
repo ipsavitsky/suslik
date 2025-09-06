@@ -1,27 +1,15 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "allowedCommands": [
-    "^./scripts/vendor_hash.sh --update$"
+  "postUpdateOptions": [
+    "gomodTidy"
   ],
   "postUpgradeTasks": {
-    "tasks": [
-      {
-        "fileFilters": [
-          "go.mod",
-          "go.sum"
-        ],
-        "commands": [
-          "go mod tidy"
-        ]
-      },
-      {
-        "fileFilters": [
-          "nix/goVendorHash.nix"
-        ],
-        "commands": [
-          "./scripts/vendor_hash.sh --update"
-        ]
-      }
-    ]
+    "commands": [
+      "./scripts/vendor_hash.sh --update"
+    ],
+    "fileFilters": [
+      "nix/goVendorHash.nix"
+    ],
+    "executionMode": "branch"
   }
 }
