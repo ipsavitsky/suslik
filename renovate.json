@@ -5,7 +5,7 @@
   ],
   "postUpgradeTasks": {
     "commands": [
-      "./scripts/vendor_hash.sh --update"
+      "bash ./scripts/vendor_hash.sh --update"
     ],
     "fileFilters": [
       "nix/goVendorHash.nix"
