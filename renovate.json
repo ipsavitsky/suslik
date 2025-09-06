@@ -2,8 +2,8 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "packageRules": [
     {
-      "matchFileNames": [
-        "go.mod"
+      "matchManagers": [
+        "gomod"
       ],
       "postUpgradeTasks": {
         "commands": [
