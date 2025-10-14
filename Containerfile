@@ -1,4 +1,4 @@
-FROM docker.io/library/golang:1.25.2-alpine3.21 as builder
+FROM docker.io/library/golang:1.25.3-alpine3.21 as builder
 
 COPY . .
 
