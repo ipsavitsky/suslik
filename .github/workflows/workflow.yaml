@@ -13,3 +13,10 @@ jobs:
   test:
     needs: [build]
     uses: ./.github/workflows/test.yaml
+  publish:
+    needs: [test]
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/publish.yaml

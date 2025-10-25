@@ -25,8 +25,10 @@
             src = ./.;
             vendorHash = goVendorHash;
           };
-          suslik-image = pkgs.dockerTools.buildImage {
+          suslik-image = pkgs.dockerTools.buildLayeredImage {
             name = "suslik";
+            tag = "latest";
+            contents = [ suslik ];
             config = {
               Cmd = [ "${suslik}/bin/suslik" ];
             };
