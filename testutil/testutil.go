@@ -127,7 +127,7 @@ func CreateMergeRequestWithReviewer(t *testing.T, project *gitlab.Project, revie
 		Description:  gitlab.Ptr("Test merge request"),
 		SourceBranch: &sourceBranch,
 		TargetBranch: &targetBranch,
-		ReviewerIDs:  &[]int{reviewer.ID},
+		ReviewerIDs:  &[]int64{reviewer.ID},
 	}
 
 	mergeRequest, _, err := TestGitlabClient.MergeRequests.CreateMergeRequest(project.ID, options)

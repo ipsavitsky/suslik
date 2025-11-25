@@ -68,7 +68,7 @@ func (a app) run() {
 		reviewerUsers, warnings := a.getUsers(reviewersInfo.Usernames)
 		logger.Debugf("Got %d reviewer users", len(reviewerUsers))
 
-		var reviewersIDs []int
+		var reviewersIDs []int64
 		for _, existingReviewer := range mergeRequest.Reviewers {
 			if existingReviewer.ID == a.getCurrentUser().ID {
 				logger.Debug("Skipping bot user", "id", existingReviewer.ID, "username", existingReviewer.Username)
@@ -120,7 +120,7 @@ func (a app) run() {
 		}
 
 		if len(warnings) != 0 {
-			assignmentBody += fmt.Sprintf("⚠ Warnings:<br />")
+			assignmentBody += "⚠ Warnings:<br />"
 			for _, warning := range warnings {
 				assignmentBody += fmt.Sprintf("- %s<br />", warning)
 			}

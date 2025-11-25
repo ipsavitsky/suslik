@@ -19,7 +19,7 @@
       {
         packages = rec {
           default = suslik;
-          suslik = pkgs.buildGoModule {
+          suslik = pkgs.buildGo125Module {
             pname = "suslik";
             version = "0.1.0";
             src = ./.;
