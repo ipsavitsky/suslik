@@ -2,7 +2,7 @@ module github.com/ipsavitsky/suslik
 
 go 1.24
 
-toolchain go1.24.9
+toolchain go1.25.4
 
 require (
 	github.com/BurntSushi/toml v1.5.0
