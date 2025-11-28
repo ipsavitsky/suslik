@@ -7,7 +7,7 @@ toolchain go1.25.4
 require (
 	github.com/BurntSushi/toml v1.5.0
 	github.com/charmbracelet/log v0.4.2
-	gitlab.com/gitlab-org/api/client-go v1.0.1
+	gitlab.com/gitlab-org/api/client-go v1.2.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
