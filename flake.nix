@@ -28,9 +28,16 @@
           suslik-image = pkgs.dockerTools.buildLayeredImage {
             name = "suslik";
             tag = "latest";
-            contents = [ suslik ];
+            contents = [
+              suslik
+              pkgs.dockerTools.caCertificates
+              pkgs.busybox
+            ];
             config = {
               Cmd = [ "${suslik}/bin/suslik" ];
+              Env = [
+                "PATH=/bin"
+              ];
             };
           };
         };
