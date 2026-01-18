@@ -7,15 +7,12 @@
       ],
       "postUpgradeTasks": {
         "commands": [
-          "go mod tidy",
           "bash ./scripts/vendor_hash.sh --update"
         ],
         "fileFilters": [
-          "go.mod",
-          "go.sum",
-          "nix/goVendorHash.nix"
+          "**/*.nix"
         ],
-        "executionMode": "branch"
+        "executionMode": "update"
       }
     }
   ]
