@@ -2,8 +2,6 @@ module github.com/ipsavitsky/suslik
 
 go 1.24.0
 
-toolchain go1.25.7
-
 require (
 	github.com/BurntSushi/toml v1.6.0
 	github.com/charmbracelet/log v0.4.2
