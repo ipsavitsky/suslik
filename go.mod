@@ -1,11 +1,12 @@
 module github.com/ipsavitsky/suslik
 
-go 1.24.0
+go 1.25.0
 
 require (
 	github.com/BurntSushi/toml v1.6.0
 	github.com/charmbracelet/log v0.4.2
-	gitlab.com/gitlab-org/api/client-go v1.45.0
+	gitlab.com/gitlab-org/api/client-go v1.46.0
+	gitlab.com/gitlab-org/api/client-go/v2 v2.4.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
