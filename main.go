@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 
-	"github.com/charmbracelet/log"
+	"charm.land/log/v2"
 
 	gitlab "gitlab.com/gitlab-org/api/client-go"
 )

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"math/rand/v2"
 
-	"github.com/charmbracelet/log"
+	"charm.land/log/v2"
 	"gitlab.com/gitlab-org/api/client-go"
 	"gopkg.in/yaml.v3"
 )

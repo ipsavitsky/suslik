@@ -19,7 +19,7 @@
       {
         packages = rec {
           default = suslik;
-          suslik = pkgs.buildGo125Module {
+          suslik = pkgs.buildGo126Module {
             pname = "suslik";
             version = "0.1.0";
             src = ./.;
@@ -45,7 +45,7 @@
         devShells = {
           default = pkgs.mkShell {
             packages = with pkgs; [
-              go
+              go_1_26
               air
               gopls
               go-tools
