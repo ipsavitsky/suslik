@@ -4,9 +4,9 @@ go 1.25.0
 
 require (
 	github.com/BurntSushi/toml v1.6.0
-	github.com/charmbracelet/log v0.4.2
-	gitlab.com/gitlab-org/api/client-go v1.46.0
-	gitlab.com/gitlab-org/api/client-go/v2 v2.4.0
+	github.com/charmbracelet/log/v2 v2.0.0
+	gitlab.com/gitlab-org/api/client-go/v2 v2.5.0
+	gitlab.com/gitlab-org/api/client-go/v2 v2.5.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
