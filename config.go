@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/BurntSushi/toml"
-	"github.com/charmbracelet/log"
+	"charm.land/log/v2"
 )
 
 type ModeType string
