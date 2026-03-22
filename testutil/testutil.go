@@ -2,7 +2,7 @@ package testutil
 
 import (
 	"encoding/base64"
-	"gitlab.com/gitlab-org/api/client-go"
+	"gitlab.com/gitlab-org/api/client-go/v2"
 	"os"
 	"testing"
 	"fmt"
