@@ -7,7 +7,7 @@ import (
 	"math/rand/v2"
 
 	"charm.land/log/v2"
-	"gitlab.com/gitlab-org/api/client-go"
+	"gitlab.com/gitlab-org/api/client-go/v2"
 	"gopkg.in/yaml.v3"
 )
 

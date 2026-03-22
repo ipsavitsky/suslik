@@ -5,7 +5,7 @@ go 1.26.1
 require (
 	charm.land/log/v2 v2.0.0
 	github.com/BurntSushi/toml v1.6.0
-	gitlab.com/gitlab-org/api/client-go v1.46.0
+	gitlab.com/gitlab-org/api/client-go/v2 v2.7.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 

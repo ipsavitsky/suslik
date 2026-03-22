@@ -5,7 +5,7 @@ import (
 
 	"charm.land/log/v2"
 
-	gitlab "gitlab.com/gitlab-org/api/client-go"
+	gitlab "gitlab.com/gitlab-org/api/client-go/v2"
 )
 
 type app struct {
