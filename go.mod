@@ -5,7 +5,7 @@ go 1.26.1
 require (
 	charm.land/log/v2 v2.0.0
 	github.com/BurntSushi/toml v1.6.0
-	gitlab.com/gitlab-org/api/client-go/v2 v2.36.0
+	gitlab.com/gitlab-org/api/client-go/v2 v2.39.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -31,6 +31,6 @@ require (
 	golang.org/x/exp v0.0.0-20250813145105-42675adae3e6 // indirect
 	golang.org/x/oauth2 v0.36.0 // indirect
 	golang.org/x/sync v0.18.0 // indirect
-	golang.org/x/sys v0.42.0 // indirect
-	golang.org/x/time v0.14.0 // indirect
+	golang.org/x/sys v0.45.0 // indirect
+	golang.org/x/time v0.15.0 // indirect
 )
