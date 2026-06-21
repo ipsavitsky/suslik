@@ -15,7 +15,7 @@
       let
         goVendorHash = import ./nix/goVendorHash.nix;
         pkgs = import nixpkgs { inherit system; };
-      in
+      in rec
       {
         packages = rec {
           default = suslik;
@@ -40,6 +40,11 @@
               ];
             };
           };
+        };
+
+        checks = {
+          x86_64-linux = packages.suslik;
+          x86_64-linux-image = packages.suslik-image;
         };
 
         devShells = {
