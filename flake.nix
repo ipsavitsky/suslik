@@ -15,16 +15,18 @@
       let
         goVendorHash = import ./nix/goVendorHash.nix;
         pkgs = import nixpkgs { inherit system; };
-      in rec
+        suslik = pkgs.buildGo126Module {
+          pname = "suslik";
+          version = "0.1.0";
+          src = ./.;
+          vendorHash = goVendorHash;
+        };
+      in
       {
-        packages = rec {
+        packages = {
           default = suslik;
-          suslik = pkgs.buildGo126Module {
-            pname = "suslik";
-            version = "0.1.0";
-            src = ./.;
-            vendorHash = goVendorHash;
-          };
+          inherit suslik;
+        } // pkgs.lib.optionalAttrs pkgs.stdenv.isLinux {
           suslik-image = pkgs.dockerTools.buildLayeredImage {
             name = "suslik";
             tag = "latest";
@@ -43,8 +45,9 @@
         };
 
         checks = {
-          x86_64-linux = packages.suslik;
-          x86_64-linux-image = packages.suslik-image;
+          inherit suslik;
+        } // pkgs.lib.optionalAttrs pkgs.stdenv.isLinux {
+          suslik-image = self.packages.${system}.suslik-image;
         };
 
         devShells = {
